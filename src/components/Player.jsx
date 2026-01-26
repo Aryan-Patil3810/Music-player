@@ -106,20 +106,33 @@ const Player = () => {
     }
   }, [volume]);
 
+  useEffect(() => {
+    if (!audioRef.current) return;
+
+    audioRef.current.currentTime = 0;
+    setCurrentTime(0);
+    setDuration(0);
+  }, [currentSongIndex]);
+
+
   /* ---------------- TIME ---------------- */
   const handleTimeUpdate = () => {
+    if (!audioRef.current) return;
     setCurrentTime(audioRef.current.currentTime);
   };
 
   const handleLoadedMetadata = () => {
+    if (!audioRef.current) return;
     setDuration(audioRef.current.duration);
   };
 
   const handleSeek = (e) => {
+    if (!audioRef.current) return;
     const seekTime = Number(e.target.value);
     audioRef.current.currentTime = seekTime;
     setCurrentTime(seekTime);
   };
+
 
   const formatTime = (time) => {
     if (isNaN(time)) return "00:00";
@@ -185,12 +198,15 @@ const Player = () => {
                  bg-white/10 backdrop-blur-xl rounded-3xl shadow-2xl">
     
       <audio
+        key={currentSong.id}
         ref={audioRef}
         src={currentSong.src}
+        preload="metadata"
         onTimeUpdate={handleTimeUpdate}
         onLoadedMetadata={handleLoadedMetadata}
         onEnded={nextSong}
       />
+
 
 
       {/* Theme Toggle */}
@@ -257,8 +273,14 @@ const Player = () => {
       {/* Progress */}
       <input
         type="range"
-        className="w-full max-w-md md:max-w-xl"
+        min="0"
+        max={duration || 0}
+        value={currentTime}
+        onChange={handleSeek}
+        className="w-full max-w-xl"
+        disabled={!duration}
       />
+
 
       <p className="text-xs text-gray-500 mt-2">
         Preview playback (30 seconds)
