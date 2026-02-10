@@ -29,7 +29,7 @@ const Player = () => {
   useEffect(() => {
   const timer = setTimeout(() => {
       setDebouncedQuery(query);
-    }, 500); // 500ms delay
+    }, 3000); // 500ms delay
 
     return () => clearTimeout(timer);
   }, [query]);
